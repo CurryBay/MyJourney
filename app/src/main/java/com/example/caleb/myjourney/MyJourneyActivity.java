@@ -145,7 +145,8 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 Intent journey = new Intent(MyJourneyActivity.this, MainActivity.class);
                                 startActivity(journey);
                                 break;
-                            case 1: //Apply Visa
+                            case 1: goToVisa();
+                                break;
                             case 2: //Explore
                         }
                         break;
@@ -156,10 +157,14 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 break;
                         }
                         break;
-                    case 2: //departure
+                    case 2:
                         switch(childPosition){
-                            case 4: //map to lounge
-                            case 5: //map to gate
+                            case 0:
+                                Intent alarm = new Intent(MyJourneyActivity.this, Alarm.class);
+                                startActivity(alarm);
+                                break;
+                            case 3:
+                                break;
                         }
                     case 3: //transit
                         switch(childPosition){
@@ -171,6 +176,7 @@ public class MyJourneyActivity extends AppCompatActivity {
                             case 1: //map
                             case 2: //explore
                         }
+
                 }
 
 
@@ -208,8 +214,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         departure.add(new ListItem("Time left to departure: "));
         departure.add(new ListItem("Terminal"));
         departure.add(new ListItem("Gate: "));
-<<<<<<< Updated upstream
-        departure.add(new ListItem("Flight Details"));
+        departure.add(new ListItem("Flight Details" + scheduled));
         departure.add(new ListItem("Map to lounge", true));
         departure.add(new ListItem("Map to gate", true));
 
@@ -217,13 +222,10 @@ public class MyJourneyActivity extends AppCompatActivity {
         transit.add(new ListItem("Time left to departure: "));
         transit.add(new ListItem("Terminal"));
         transit.add(new ListItem("Gate: "));
-        transit.add(new ListItem("Flight Details"));
+        transit.add(new ListItem("Flight Details: " + scheduled));
         transit.add(new ListItem("Map to lounge", true));
         transit.add(new ListItem("Map to gate", true));
-=======
-        departure.add(new ListItem("Flight Details " + scheduled));
-        departure.add(new ListItem("Map", true));
->>>>>>> Stashed changes
+
 
         List<ListItem> arrival = new ArrayList<>();
         arrival.add(new ListItem("Flight Status"));
@@ -427,6 +429,16 @@ public class MyJourneyActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void goToVisa() {
+        goToUrl ( "http://visacentral.sg/requirements");
+    }
+
+    private void goToUrl(String url) {
+        Uri uriUrl = Uri.parse(url);
+        Intent launchWeb = new Intent(Intent.ACTION_VIEW, uriUrl);
+        startActivity(launchWeb);
     }
 
 }

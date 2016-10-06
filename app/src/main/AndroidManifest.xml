@@ -21,6 +21,10 @@
             android:name=".MyJourneyActivity"
             android:label="@string/title_activity_my_journey"
             android:theme="@style/AppTheme" />
+        <activity android:name=".Alarm"></activity>
+        <receiver
+            android:name=".AlarmReceiver" >
+        </receiver>
     </application>
 
 </manifest>
