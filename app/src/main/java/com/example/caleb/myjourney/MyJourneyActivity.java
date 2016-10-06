@@ -237,16 +237,26 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 startActivity(alarm);
                                 break;
                             case 3:
+                                Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
+                                map.putExtra("mapID", 0);
+                                startActivity(map);
                                 break;
                         }
                     case 3: //transit
                         switch(childPosition){
-                            case 4: //map to lounge
+                            case 4:
+                                Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
+                                map.putExtra("mapID", 1);
+                                startActivity(map);
                             case 5: //map to gate
                         }
                     case 4: //Arrival
                         switch(childPosition) {
-                            case 1: //map
+                            case 1:
+                                Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
+                                map.putExtra("mapID", 2);
+                                startActivity(map);
+
                             case 2: //explore
                         }
                 }
@@ -287,16 +297,14 @@ public class MyJourneyActivity extends AppCompatActivity {
         departure.add(new ListItem("Terminal: " + flightInfo.getTerminal()));
         departure.add(new ListItem("Gate: " + gate));
         departure.add(new ListItem("Flight Details"));
-        departure.add(new ListItem("Map to lounge", true));
-        departure.add(new ListItem("Map to gate", true));
+        departure.add(new ListItem("Map", true));
 
         List<ListItem> transit = new ArrayList<>();
         transit.add(new ListItem("Time left to departure: ", true));
         transit.add(new ListItem("Terminal: "));
         transit.add(new ListItem("Gate: "));
         transit.add(new ListItem("Flight Details: "));
-        transit.add(new ListItem("Map to lounge", true));
-        transit.add(new ListItem("Map to gate", true));
+        transit.add(new ListItem("Map", true));
 
 
         List<ListItem> arrival = new ArrayList<>();

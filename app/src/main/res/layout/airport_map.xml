@@ -20,7 +20,7 @@
            android:id="@+id/airportName"
         />
 
-        <com.example.caleb.myjourney.ZoomPic
+        <com.example.caleb.myjourney.TouchImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/airportName"
