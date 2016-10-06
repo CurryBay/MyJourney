@@ -15,31 +15,33 @@
         >
 
         <ImageView
+            android:id="@+id/destination"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/new_york_skyline"
             android:scaleType="centerCrop"
-            android:id="@+id/destination"
+            android:src="@drawable/new_york_skyline"
             />
 
 
         <TextView
+            android:id="@+id/cityname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="NEW YORK"
-            android:textColor="@android:color/white"
-            android:textSize="40dp"
             android:layout_alignBottom="@id/destination"
-            android:layout_marginLeft="16dp"
             android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-condensed" />
+            android:layout_marginLeft="16dp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="NEW YORK"
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="40dp" />
 
         <ExpandableListView
             android:id="@+id/lvExp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:groupIndicator="@null"
             android:layout_below="@id/destination"
+            android:groupIndicator="@null"
             />
         <!--android:divider="@null"
         android:dividerHeight="0dp" -->

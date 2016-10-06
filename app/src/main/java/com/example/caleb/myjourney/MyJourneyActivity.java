@@ -87,14 +87,12 @@ public class MyJourneyActivity extends AppCompatActivity {
         String[] dateSplit = tempSplit[0].split("-");
         final String[] timeInfo = tempSplit[1].split(":");
         scheduled= timeInfo[0] + ":" + timeInfo[1];
-        int time = Integer.parseInt(timeInfo[0]) * 60 + Integer.parseInt(timeInfo[1]);
-        int day = Integer.parseInt(dateSplit[2]);
-        day += (time + flightInfo.getDuration()) % 1440;
-        time = (time + flightInfo.getDuration()) % 1440;
-        int h = time / 60;
-        int m = time % 60;
+
 
         Log.v("MyJourneyActivity", "flightInfo.getStatusText() is: " + flightInfo.getStatusText());
+
+        TextView cityname = (TextView) findViewById(R.id.cityname);
+        cityname.setText(flightInfo.getCity());
 
 
 
