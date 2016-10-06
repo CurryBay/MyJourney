@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/alarmWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hi"
+        android:background="@color/SIABlue"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:textColor="@color/white"
+        android:paddingBottom="16dp"
+        android:textSize="24dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SET ALARM :"
+        android:background="@color/SIABlue"
+        android:textColor="@color/white"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:textSize="34dp"/>
 
     <TimePicker
         android:id="@+id/timePicker"
@@ -16,7 +43,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="20dp"
+        android:textOn="turn off alarm"
+        android:textOff="turn on alarm"
         android:checked="false"
         android:onClick="OnToggleClicked" />
 
 </LinearLayout>
+</ScrollView>

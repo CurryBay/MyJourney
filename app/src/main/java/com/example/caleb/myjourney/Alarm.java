@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -17,6 +18,7 @@ public class Alarm extends AppCompatActivity {
     TimePicker alarmTimePicker;
     PendingIntent pendingIntent;
     AlarmManager alarmManager;
+    private String departureTime, hour, min;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +26,20 @@ public class Alarm extends AppCompatActivity {
         setContentView(R.layout.activity_alarm);
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Bundle bundle = getIntent().getExtras();
+        departureTime = bundle.getString("scheduled");
+        hour = bundle.getString("hour");
+        min = bundle.getString("minute");
+
+        TextView alarmWarning = (TextView) findViewById(R.id.alarmWarning);
+        alarmWarning.setText("Departure time: " + departureTime);
+
+        alarmTimePicker.setCurrentHour(Integer.parseInt(hour));
+        alarmTimePicker.setCurrentMinute(Integer.parseInt(min));
     }
+
+
 
     public void OnToggleClicked(View view)
     {
