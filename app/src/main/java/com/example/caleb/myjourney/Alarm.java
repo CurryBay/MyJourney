@@ -51,6 +51,7 @@ public class Alarm extends AppCompatActivity {
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
             calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
             Intent intent = new Intent(this, AlarmReceiver.class);
+            intent.putExtra("departureTime", departureTime);
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
 
             time=(calendar.getTimeInMillis()-(calendar.getTimeInMillis()%60000));
