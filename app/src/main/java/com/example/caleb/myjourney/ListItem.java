@@ -7,6 +7,7 @@ package com.example.caleb.myjourney;
 public class ListItem {
     private String name;
     private boolean isButton = false;
+    private int image;
 
     public ListItem(String name, boolean isButton) {
         this.name = name;
@@ -15,6 +16,11 @@ public class ListItem {
 
     public ListItem(String name) {
         this.name = name;
+    }
+
+    public ListItem(String name, int image) {
+        this.name = name;
+        this.image = image;
     }
 
     public String getName() {
@@ -31,5 +37,13 @@ public class ListItem {
 
     public void setButton(boolean button) {
         isButton = button;
+    }
+
+    public int getImage() {
+        return image;
+    }
+
+    public void setImage(int image) {
+        this.image = image;
     }
 }

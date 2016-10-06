@@ -139,7 +139,7 @@ public class MyJourneyActivity extends AppCompatActivity {
 //                                + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).getName(), Toast.LENGTH_SHORT)
 //                        .show();
                 switch(groupPosition){
-                    case 0:
+                    case 0: //Pre-Flight
                         switch(childPosition){
                             case 0: //Manage Booking Details
                                 Intent journey = new Intent(MyJourneyActivity.this, MainActivity.class);
@@ -149,14 +149,28 @@ public class MyJourneyActivity extends AppCompatActivity {
                             case 2: //Explore
                         }
                         break;
-                    case 1:
+                    case 1: //Checkin
                         switch(childPosition){
                             case 0: //Check in online
                             default:
                                 break;
                         }
                         break;
-                    case 2: //Departure
+                    case 2: //departure
+                        switch(childPosition){
+                            case 4: //map to lounge
+                            case 5: //map to gate
+                        }
+                    case 3: //transit
+                        switch(childPosition){
+                            case 4: //map to lounge
+                            case 5: //map to gate
+                        }
+                    case 4: //Arrival
+                        switch(childPosition) {
+                            case 1: //map
+                            case 2: //explore
+                        }
                 }
 
 
@@ -176,6 +190,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         listDataHeader.add("Pre-Flight");
         listDataHeader.add("Check In");
         listDataHeader.add("Departure");
+        listDataHeader.add("Transit");
         listDataHeader.add("Arrival");
 
         // Adding child data
@@ -190,10 +205,20 @@ public class MyJourneyActivity extends AppCompatActivity {
         checkIn.add(new ListItem("Flight Status: " + flightInfo.getStatusText()));
 
         List<ListItem> departure = new ArrayList<>();
+        departure.add(new ListItem("Time left to departure: "));
         departure.add(new ListItem("Terminal"));
         departure.add(new ListItem("Gate: "));
         departure.add(new ListItem("Flight Details"));
-        departure.add(new ListItem("Map", true));
+        departure.add(new ListItem("Map to lounge", true));
+        departure.add(new ListItem("Map to gate", true));
+
+        List<ListItem> transit = new ArrayList<>();
+        transit.add(new ListItem("Time left to departure: "));
+        transit.add(new ListItem("Terminal"));
+        transit.add(new ListItem("Gate: "));
+        transit.add(new ListItem("Flight Details"));
+        transit.add(new ListItem("Map to lounge", true));
+        transit.add(new ListItem("Map to gate", true));
 
         List<ListItem> arrival = new ArrayList<>();
         arrival.add(new ListItem("Flight Status"));
@@ -203,7 +228,8 @@ public class MyJourneyActivity extends AppCompatActivity {
         listDataChild.put(listDataHeader.get(0), preFlight); // Header, Child data
         listDataChild.put(listDataHeader.get(1), checkIn);
         listDataChild.put(listDataHeader.get(2), departure);
-        listDataChild.put(listDataHeader.get(3), arrival);
+        listDataChild.put(listDataHeader.get(3), transit);
+        listDataChild.put(listDataHeader.get(4), arrival);
     }
 
     public void sendGetRequestFlightDetails() {
