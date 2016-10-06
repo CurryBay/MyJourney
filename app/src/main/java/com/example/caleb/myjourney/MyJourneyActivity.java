@@ -194,7 +194,8 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 Intent journey = new Intent(MyJourneyActivity.this, MainActivity.class);
                                 startActivity(journey);
                                 break;
-                            case 1: //Apply Visa
+                            case 1: goToVisa();
+                                break;
                             case 2: //Explore
                         }
                         break;
@@ -207,8 +208,12 @@ public class MyJourneyActivity extends AppCompatActivity {
                         break;
                     case 2: //departure
                         switch(childPosition){
-                            case 4: //map to lounge
-                            case 5: //map to gate
+                            case 0:
+                                Intent alarm = new Intent(MyJourneyActivity.this, Alarm.class);
+                                startActivity(alarm);
+                                break;
+                            case 3:
+                                break;
                         }
                     case 3: //transit
                         switch(childPosition){
@@ -265,9 +270,10 @@ public class MyJourneyActivity extends AppCompatActivity {
         transit.add(new ListItem("Time left to departure: "));
         transit.add(new ListItem("Terminal"));
         transit.add(new ListItem("Gate: "));
-        transit.add(new ListItem("Flight Details"));
+        transit.add(new ListItem("Flight Details: " + scheduled));
         transit.add(new ListItem("Map to lounge", true));
         transit.add(new ListItem("Map to gate", true));
+
 
         List<ListItem> arrival = new ArrayList<>();
         arrival.add(new ListItem("Flight Status"));
@@ -393,7 +399,7 @@ public class MyJourneyActivity extends AppCompatActivity {
                         Intent journey = new Intent(MyJourneyActivity.this, MyJourneyActivity.class);
 
                         // passing on the variables  needed in My Journey
-                        journey.putExtra("waitTime", waittime);
+                        journey.putExtra("waitTime", -1);
                         journey.putExtra("statusText", flightInfo.getStatusText());
                         journey.putExtra("scheduled", flightInfo.getScheduled());
                         journey.putExtra("terminal", flightInfo.getTerminal());
@@ -467,6 +473,16 @@ public class MyJourneyActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void goToVisa() {
+        goToUrl ( "http://visacentral.sg/requirements");
+    }
+
+    private void goToUrl(String url) {
+        Uri uriUrl = Uri.parse(url);
+        Intent launchWeb = new Intent(Intent.ACTION_VIEW, uriUrl);
+        startActivity(launchWeb);
     }
 
 }
