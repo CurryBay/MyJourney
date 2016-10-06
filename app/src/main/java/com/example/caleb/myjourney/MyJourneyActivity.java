@@ -29,9 +29,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 public class MyJourneyActivity extends AppCompatActivity {
 
@@ -48,6 +54,11 @@ public class MyJourneyActivity extends AppCompatActivity {
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private String scheduled;
+    private int hours;
+    private int min;
+    private String remainingTime;
+    private String flight_number2;
+    private String terminal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +77,16 @@ public class MyJourneyActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         waittime =intent.getExtras().getInt("waitTime");
+        flight_number2 = intent.getExtras().getString("flight_number2");
         String tempSchedule = intent.getExtras().getString("scheduled");
         String[] tempSplit = tempSchedule.split("T");
         String[] timeInfo = tempSplit[1].split(":");
         scheduled= timeInfo[0] + ":" + timeInfo[1];
         sendGetRequestFlightDetails();
 
-        // get the listview
+        Log.i("======= Hours"," :: "+hours);
+
+            // get the listview
         expListView = (ExpandableListView) findViewById(R.id.lvExp);
 
         // preparing list data
@@ -83,6 +97,41 @@ public class MyJourneyActivity extends AppCompatActivity {
 
         // setting list adapter
         expListView.setAdapter(listAdapter);
+
+       /* CountDownTimer newtimer = new CountDownTimer(1000000000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {*/
+                Calendar currentTime = Calendar.getInstance(TimeZone.getDefault());
+                Date currentLocalTime = currentTime.getTime();
+                DateFormat date = new SimpleDateFormat("HH:mm a");
+                date.setTimeZone(TimeZone.getDefault());
+
+                String localTime = date.format(currentLocalTime);
+                Log.v("MyJourney", localTime);
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                Date date1 = simpleDateFormat.parse(localTime, new ParsePosition(0));
+                Date date2 = simpleDateFormat.parse(scheduled, new ParsePosition(0));
+
+                long difference = date2.getTime() - date1.getTime();
+                int days = (int) (difference / (1000*60*60*24));
+                hours = (int) ((difference - (1000*60*60*24*days)) / (1000*60*60));
+                min = (int) (difference - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
+                hours = (hours < 0 ? -hours : hours);
+                min = (min < 0 ? -min : min);
+                remainingTime = hours + " hour " + min + " min";
+                /*prepareListData();
+                listAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+        newtimer.start();*/
+
 
 
 
@@ -205,10 +254,9 @@ public class MyJourneyActivity extends AppCompatActivity {
         checkIn.add(new ListItem("Flight Status: " + flightInfo.getStatusText()));
 
         List<ListItem> departure = new ArrayList<>();
-        departure.add(new ListItem("Time left to departure: "));
-        departure.add(new ListItem("Terminal"));
-        departure.add(new ListItem("Gate: "));
-<<<<<<< Updated upstream
+        departure.add(new ListItem("Time left to departure: " + remainingTime));
+        departure.add(new ListItem("Terminal " + flightInfo.getTerminal()));
+        departure.add(new ListItem("Gate: " + flightInfo.getGate()));
         departure.add(new ListItem("Flight Details"));
         departure.add(new ListItem("Map to lounge", true));
         departure.add(new ListItem("Map to gate", true));
@@ -220,10 +268,6 @@ public class MyJourneyActivity extends AppCompatActivity {
         transit.add(new ListItem("Flight Details"));
         transit.add(new ListItem("Map to lounge", true));
         transit.add(new ListItem("Map to gate", true));
-=======
-        departure.add(new ListItem("Flight Details " + scheduled));
-        departure.add(new ListItem("Map", true));
->>>>>>> Stashed changes
 
         List<ListItem> arrival = new ArrayList<>();
         arrival.add(new ListItem("Flight Status"));
@@ -266,7 +310,7 @@ public class MyJourneyActivity extends AppCompatActivity {
                 Uri builtUri = Uri.parse(baseURL).buildUpon()
                         .appendPath("sin")
                         .appendPath("sq")
-                        .appendPath("26")
+                        .appendPath(flight_number2)
                         .appendPath("d")
                         .build();
                 Log.v("MainActivity", builtUri.toString());
@@ -349,16 +393,12 @@ public class MyJourneyActivity extends AppCompatActivity {
                         Intent journey = new Intent(MyJourneyActivity.this, MyJourneyActivity.class);
 
                         // passing on the variables  needed in My Journey
-                        journey.putExtra("waitTime", -1);
+                        journey.putExtra("waitTime", waittime);
                         journey.putExtra("statusText", flightInfo.getStatusText());
                         journey.putExtra("scheduled", flightInfo.getScheduled());
                         journey.putExtra("terminal", flightInfo.getTerminal());
                         journey.putExtra("city", flightInfo.getCity());
-                        //journey.putExtra("gate", flightInfo.getGate());
-
-                        /* journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("statusText", flightInfo.getStatusText()); */
+                        journey.putExtra("gate", flightInfo.getGate());
                         startActivity(journey);
                     default:
                         break;

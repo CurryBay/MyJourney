@@ -299,24 +299,31 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
                 switch(position){
                     case 1:
-                        Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
-                        Log.v("MainActivity", flightInfo.getScheduled());
-                        // passing on the variables  needed in My Journey
-                          journey.putExtra("waitTime", waitTime);
-//                        journey.putExtra("statusText", flightInfo.getStatusText());
-                          journey.putExtra("scheduled", flightInfo.getScheduled());
-                          journey.putExtra("terminal", flightInfo.getTerminal());
-//                        journey.putExtra("city", flightInfo.getCity());
-//                        journey.putExtra("gate", flightInfo.getGate());
+                        if (flight_number2 != null) {
+                            Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
+                            Log.v("MainActivity", flightInfo.getScheduled());
+                            // passing on the variables  needed in My Journey
+                              journey.putExtra("waitTime", waitTime);
+                              journey.putExtra("flight_number2", flight_number2);
+        //                        journey.putExtra("statusText", flightInfo.getStatusText());
+                              journey.putExtra("scheduled", flightInfo.getScheduled());
+                              journey.putExtra("terminal", flightInfo.getTerminal());
+                              journey.putExtra("city", flightInfo.getCity());
+        //                        journey.putExtra("gate", flightInfo.getGate());
 
-                        /* journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("statusText", flightInfo.getStatusText()); */
-                        startActivity(journey);
+                            /* journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText()); */
+
+                            startActivity(journey);
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        }
                     default:
                         break;
                 }
