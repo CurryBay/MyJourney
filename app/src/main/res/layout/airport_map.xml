@@ -1,0 +1,41 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/SIAlightGold">
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Changi Airport Terminal 3"
+           android:textSize="24dp"
+           android:id="@+id/airportName"
+        />
+
+        <com.example.caleb.myjourney.ZoomPic
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/airportName"
+            android:src="@drawable/jfk_t4"
+            android:id="@+id/airportMap"
+        />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/navList"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:background="#ffeeeeee"/>
+
+
+</android.support.v4.widget.DrawerLayout>
