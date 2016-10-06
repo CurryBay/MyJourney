@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.caleb.myjourney.R;
@@ -26,11 +27,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<ListItem>> _listDataChild;
+    private Flight flightInfo;
 
-    public ExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<ListItem>> listChildData) {
+    public ExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<ListItem>> listChildData, Flight flightInfo) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
+        this.flightInfo = flightInfo;
+
     }
 
     @Override
@@ -56,6 +60,43 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem);
         ImageView button = (ImageView) convertView.findViewById(R.id.button);
+        LinearLayout flightinfo = (LinearLayout) convertView.findViewById(R.id.flightinfo);
+
+        String tempSchedule = flightInfo.getScheduled();
+        String[] tempSplit = tempSchedule.split("T");
+        String[] dateSplit = tempSplit[0].split("-");
+        final String[] timeInfo = tempSplit[1].split(":");
+        String scheduled = timeInfo[0] + ":" + timeInfo[1];
+        int time = Integer.parseInt(timeInfo[0]) * 60 + Integer.parseInt(timeInfo[1]);
+        int day = Integer.parseInt(dateSplit[2]);
+        day += (time + flightInfo.getDuration()) / 1440;
+        time = (time + flightInfo.getDuration()) % 1440;
+        int h = time / 60;
+        int m = time % 60;
+
+        TextView flightNo = (TextView) convertView.findViewById(R.id.flightNumber);
+        TextView departure = (TextView) convertView.findViewById(R.id.departure);
+        TextView departureCity = (TextView) convertView.findViewById(R.id.departureCity);
+        TextView departureTerminal = (TextView) convertView.findViewById(R.id.departureTerminal);
+        TextView duration = (TextView) convertView.findViewById(R.id.duration);
+        TextView arrivalCity = (TextView) convertView.findViewById(R.id.arrivalCity);
+        TextView arrival = (TextView) convertView.findViewById(R.id.arrival);
+        TextView arrivalTerminal = (TextView) convertView.findViewById(R.id.arrivalTerminal);
+
+        flightNo.setText("Flight " + flightInfo.getAirlineCode() + " " + flightInfo.getFlightNumber());
+        departure.setText(flightInfo.getAirportCode() + " " + scheduled);
+        departureTerminal.setText(tempSplit[0] + ", Changi Airport Terminal " + flightInfo.getTerminal());
+        duration.setText("Total travelling time: " + flightInfo.getDuration() / 60 + " hours " + flightInfo.getDuration() % 60 + " minutes");
+        arrival.setText(flightInfo.getAirportCode2() + " " + String.format("%02d", h) + ":" + String.format("%02d", m));
+        arrivalCity.setText(flightInfo.getCity());
+        arrivalTerminal.setText(dateSplit[0] + "-" + dateSplit[1] + "-" + String.format("%02d", day));
+
+        Log.v("MyJourneyActivity", "flight details");
+
+        flightinfo.setVisibility(GONE);
+        if ((groupPosition == 1 && childPosition == 2) || (groupPosition == 2 && childPosition == 3)) {
+            flightinfo.setVisibility(VISIBLE);
+        }
 
         txtListChild.setText(childText);
 

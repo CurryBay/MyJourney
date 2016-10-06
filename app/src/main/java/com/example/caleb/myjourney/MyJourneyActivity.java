@@ -10,18 +10,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,8 +49,8 @@ public class MyJourneyActivity extends AppCompatActivity {
     List<String> listDataHeader = new ArrayList<String>();
     HashMap<String, List<ListItem>> listDataChild = new HashMap<String, List<ListItem>>();
     int currentpos = -1, waittime = -1;
-    private Flight flightInfo = null;
     Context c;
+    private Flight flightInfo = null;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
@@ -75,13 +79,25 @@ public class MyJourneyActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         Intent intent = getIntent();
+        flightInfo = (Flight) intent.getSerializableExtra("flightInfo");
         waittime =intent.getExtras().getInt("waitTime");
         flight_number2 = intent.getExtras().getString("flight_number2");
         String tempSchedule = intent.getExtras().getString("scheduled");
         String[] tempSplit = tempSchedule.split("T");
+        String[] dateSplit = tempSplit[0].split("-");
         final String[] timeInfo = tempSplit[1].split(":");
         scheduled= timeInfo[0] + ":" + timeInfo[1];
-        
+        int time = Integer.parseInt(timeInfo[0]) * 60 + Integer.parseInt(timeInfo[1]);
+        int day = Integer.parseInt(dateSplit[2]);
+        day += (time + flightInfo.getDuration()) % 1440;
+        time = (time + flightInfo.getDuration()) % 1440;
+        int h = time / 60;
+        int m = time % 60;
+
+        Log.v("MyJourneyActivity", "flightInfo.getStatusText() is: " + flightInfo.getStatusText());
+
+
+
         sendGetRequestFlightDetails();
         gate = intent.getExtras().getString("gate");
         if (gate == null) {
@@ -98,7 +114,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         //prepareListData();
 
         c = this;
-        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild, flightInfo);
 
         // setting list adapter
         expListView.setAdapter(listAdapter);
@@ -301,99 +317,6 @@ public class MyJourneyActivity extends AppCompatActivity {
         new MyJourneyActivity.GetFlightDetails(this).execute();
     }
 
-
-    private class GetFlightDetails extends AsyncTask<String, Void, Integer> {
-
-        private final Context context;
-
-        public GetFlightDetails(Context c){
-            this.context = c;
-        }
-
-        protected void onPreExecute(){
-            /* progress= new ProgressDialog(this.context);
-            progress.setMessage("Loading");
-            progress.show(); */
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            try {
-
-                // final TextView outputView = (TextView) findViewById(R.id.showOutput);
-                final String baseURL = "https://flifo-qa.api.aero/flifo/v3/flight";
-                Uri builtUri = Uri.parse(baseURL).buildUpon()
-                        .appendPath("sin")
-                        .appendPath("sq")
-                        .appendPath(flight_number2)
-                        .appendPath("d")
-                        .build();
-                Log.v("MainActivity", builtUri.toString());
-                URL url = new URL(builtUri.toString());
-
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("X-apiKey", "2cfd0827f82ceaccae7882938b4b1627");
-
-                BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                final StringBuilder responseStrBuilder = new StringBuilder();
-                String inputStr = "";
-                while ((inputStr = streamReader.readLine()) != null)
-                    responseStrBuilder.append(inputStr);
-                Log.v("MainActivity", "String is : " + responseStrBuilder.toString());
-
-                Flight flight_info = null;
-                try {
-                    JSONObject test = new JSONObject(responseStrBuilder.toString());
-                    JSONArray flightRecord = test.getJSONArray("flightRecord");
-                    JSONObject c = flightRecord.getJSONObject(0);
-                    flight_info = new Flight(c);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                flightInfo = flight_info;
-                Log.v("flightInfo", "TEST TEST TEST" +flightInfo.getStatusText());
-                MyJourneyActivity.this.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                       /* outputView.setText(responseStrBuilder);
-                        progress.dismiss(); */
-                    }
-                });
-
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            return 1;
-        }
-
-        protected void onPostExecute(Integer result){
-            Log.v("TEST", "Post executed");
-
-            prepareListData();
-
-            listAdapter = new ExpandableListAdapter(c, listDataHeader, listDataChild);
-
-            // setting list adapter
-            expListView.setAdapter(listAdapter);
-
-            super.onPostExecute(null);
-        }
-
-    }
-
-    // NAVIGATION DRAWER DETAILS
-
     private void addDrawerItems() {
         String[] osArray = { "Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings" };
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
@@ -414,7 +337,6 @@ public class MyJourneyActivity extends AppCompatActivity {
                         journey.putExtra("scheduled", flightInfo.getScheduled());
                         journey.putExtra("terminal", flightInfo.getTerminal());
                         journey.putExtra("city", flightInfo.getCity());
-                        journey.putExtra("gate", flightInfo.getGate());
                         startActivity(journey);
                     default:
                         break;
@@ -422,6 +344,8 @@ public class MyJourneyActivity extends AppCompatActivity {
             }
         });
     }
+
+    // NAVIGATION DRAWER DETAILS
 
     private void setupDrawer() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -493,6 +417,96 @@ public class MyJourneyActivity extends AppCompatActivity {
         Uri uriUrl = Uri.parse(url);
         Intent launchWeb = new Intent(Intent.ACTION_VIEW, uriUrl);
         startActivity(launchWeb);
+    }
+
+    private class GetFlightDetails extends AsyncTask<String, Void, Integer> {
+
+        private final Context context;
+
+        public GetFlightDetails(Context c) {
+            this.context = c;
+        }
+
+        protected void onPreExecute() {
+            /* progress= new ProgressDialog(this.context);
+            progress.setMessage("Loading");
+            progress.show(); */
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            try {
+
+                // final TextView outputView = (TextView) findViewById(R.id.showOutput);
+                final String baseURL = "https://flifo-qa.api.aero/flifo/v3/flight";
+                Uri builtUri = Uri.parse(baseURL).buildUpon()
+                        .appendPath("sin")
+                        .appendPath("sq")
+                        .appendPath(flight_number2)
+                        .appendPath("d")
+                        .build();
+                Log.v("MainActivity", builtUri.toString());
+                URL url = new URL(builtUri.toString());
+
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setRequestProperty("X-apiKey", "2cfd0827f82ceaccae7882938b4b1627");
+
+                BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                final StringBuilder responseStrBuilder = new StringBuilder();
+                String inputStr = "";
+                while ((inputStr = streamReader.readLine()) != null)
+                    responseStrBuilder.append(inputStr);
+                Log.v("MainActivity", "String is : " + responseStrBuilder.toString());
+
+                Flight flight_info = null;
+                try {
+                    JSONObject test = new JSONObject(responseStrBuilder.toString());
+                    JSONArray flightRecord = test.getJSONArray("flightRecord");
+                    JSONObject c = flightRecord.getJSONObject(0);
+                    flight_info = new Flight(c);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //flightInfo = flight_info;
+                Log.v("flightInfo", "TEST TEST TEST" + flightInfo.getStatusText());
+                MyJourneyActivity.this.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                       /* outputView.setText(responseStrBuilder);
+                        progress.dismiss(); */
+                    }
+                });
+
+
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            return 1;
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.v("TEST", "Post executed");
+
+            prepareListData();
+
+            listAdapter = new ExpandableListAdapter(c, listDataHeader, listDataChild, flightInfo);
+
+            // setting list adapter
+            expListView.setAdapter(listAdapter);
+
+            super.onPostExecute(null);
+        }
+
     }
 
 }

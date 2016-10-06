@@ -37,14 +37,17 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
+    public Flight flightInfo = null;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
     private int waitTime = -1;
-    private Flight flightInfo = null;
     private String statusText, scheduled, terminal, city, gate;
+    private String inputStr;
+    private StringBuilder responseStrBuilder;
+    private Flight flight_info;
 
     private String flight_number2;
     private String airlines;
@@ -121,6 +124,117 @@ public class MainActivity extends AppCompatActivity {
         new GetWaitTime(this).execute();
     }
 
+    public void sendGetRequestFlightDetails() {
+        new GetFlightDetails(this).execute();
+    }
+
+    // API CALL FOR FLIGHT DETAILS
+
+    private void addDrawerItems() {
+        String[] osArray = {"Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        mDrawerList.setAdapter(mAdapter);
+
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+
+                switch (position) {
+                    case 1:
+                        if (flight_number2 != null) {
+                            Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
+                            Log.v("MainActivity", flightInfo.getScheduled());
+                            // passing on the variables  needed in My Journey
+                            journey.putExtra("waitTime", waitTime);
+                            journey.putExtra("flight_number2", flight_number2);
+                            journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("scheduled", flightInfo.getScheduled());
+                            journey.putExtra("terminal", flightInfo.getTerminal());
+                            journey.putExtra("city", flightInfo.getCity());
+
+                            Intent alarmReceiver = new Intent(MainActivity.this, AlarmReceiver.class);
+                            //alarmReceiver.putExtra("gate", flightInfo.getGate());
+
+                            /* journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText()); */
+
+                            startActivity(journey);
+                        } else {
+                            Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        }
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Menu");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    // NAVIGATION DRAWER DETAILS
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        // Activate the navigation drawer toggle
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private class GetWaitTime extends AsyncTask<String, Void, Void> {
 
 
@@ -153,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
                 connection.setRequestProperty("X-apiKey","8e2cff00ff9c6b3f448294736de5908a");
 
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                final StringBuilder responseStrBuilder = new StringBuilder();
+                responseStrBuilder = new StringBuilder();
 
                 String inputStr = "";
                 while ((inputStr = streamReader.readLine()) != null)
@@ -198,17 +312,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // API CALL FOR FLIGHT DETAILS
-
-    public void sendGetRequestFlightDetails() {
-        new GetFlightDetails(this).execute();
-    }
-
-
     private class GetFlightDetails extends AsyncTask<String, Void, Integer> {
 
-        private ProgressDialog progress;
         private final Context context;
+        private ProgressDialog progress;
 
         public GetFlightDetails(Context c){
             this.context = c;
@@ -228,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 // final TextView outputView = (TextView) findViewById(R.id.showOutput);
                 final String baseURL = "https://flifo-qa.api.aero/flifo/v3/flight";
                 Uri builtUri = Uri.parse(baseURL).buildUpon()
-                        .appendPath("fra")
+                        .appendPath("sin")
                         .appendPath("sq")
                         .appendPath(flight_number2)
                         .appendPath("d")
@@ -242,18 +349,16 @@ public class MainActivity extends AppCompatActivity {
 
 
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                final StringBuilder responseStrBuilder = new StringBuilder();
-                String inputStr = "";
+                StringBuilder responseStrBuilder = new StringBuilder();
+                inputStr = "";
                 while ((inputStr = streamReader.readLine()) != null)
                     responseStrBuilder.append(inputStr);
                 Log.v("MainActivity", "String is : " + responseStrBuilder.toString());
 
-                Flight flight_info = null;
+                flight_info = null;
                 try {
                     JSONObject test = new JSONObject(responseStrBuilder.toString());
-                    JSONArray flightRecord = test.getJSONArray("flightRecord");
-                    JSONObject c = flightRecord.getJSONObject(0);
-                    flight_info = new Flight(c);
+                    flight_info = new Flight(test);
                     Log.v("TEST", "flight_info created");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -276,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 Log.v("MainActivity", "Please enter a valid flight");
+                Log.v("MainActivity", "String is : " + responseStrBuilder.toString());
                // Looper.prepare();
                // Toast.makeText(MainActivity.this, "Please enter a valid flight", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
@@ -285,126 +391,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
         protected void onPostExecute(Integer a){
-            Intent journey = new Intent(context, MyJourneyActivity.class);
-            journey.putExtra("waitTime", waitTime);
-            journey.putExtra("flight_number2", flight_number2);
-            journey.putExtra("statusText", flightInfo.getStatusText());
-            journey.putExtra("scheduled", flightInfo.getScheduled());
-            journey.putExtra("terminal", flightInfo.getTerminal());
-            journey.putExtra("city", flightInfo.getCity());
-            journey.putExtra("gate", flightInfo.getGate());
-            progress.dismiss();
-            startActivity(journey);
-            super.onPostExecute(null);
+            if (flightInfo != null) {
+                Intent journey = new Intent(context, MyJourneyActivity.class);
+                journey.putExtra("waitTime", waitTime);
+                journey.putExtra("flight_number2", flight_number2);
+                journey.putExtra("statusText", flightInfo.getStatusText());
+                journey.putExtra("scheduled", flightInfo.getScheduled());
+                journey.putExtra("terminal", flightInfo.getTerminal());
+                journey.putExtra("city", flightInfo.getCity());
+                journey.putExtra("flightInfo", flightInfo);
+                progress.dismiss();
+                startActivity(journey);
+                super.onPostExecute(null);
+            } else {
+                progress.dismiss();
+                Toast.makeText(MainActivity.this, "Please enter a valid flight number", Toast.LENGTH_SHORT).show();
+            }
         }
 
-    }
-
-    // NAVIGATION DRAWER DETAILS
-
-    private void addDrawerItems() {
-        String[] osArray = { "Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings" };
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-        mDrawerList.setAdapter(mAdapter);
-
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
-
-                switch(position){
-                    case 1:
-                        if (flight_number2 != null) {
-                            Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
-                            Log.v("MainActivity", flightInfo.getScheduled());
-                            // passing on the variables  needed in My Journey
-                              journey.putExtra("waitTime", waitTime);
-                              journey.putExtra("flight_number2", flight_number2);
-                              journey.putExtra("statusText", flightInfo.getStatusText());
-                              journey.putExtra("scheduled", flightInfo.getScheduled());
-                              journey.putExtra("terminal", flightInfo.getTerminal());
-                              journey.putExtra("city", flightInfo.getCity());
-                              journey.putExtra("gate", flightInfo.getGate());
-
-                            Intent alarmReceiver = new Intent(MainActivity.this, AlarmReceiver.class);
-                            alarmReceiver.putExtra("gate", flightInfo.getGate());
-
-                            /* journey.putExtra("statusText", flightInfo.getStatusText());
-                            journey.putExtra("statusText", flightInfo.getStatusText());
-                            journey.putExtra("statusText", flightInfo.getStatusText()); */
-
-                            startActivity(journey);
-                        }
-                        else {
-                            Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
-                        }
-                    default:
-                        break;
-                }
-            }
-        });
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Menu");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        // Activate the navigation drawer toggle
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
 }
