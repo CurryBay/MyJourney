@@ -200,7 +200,9 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 break;
                             case 1: goToVisa();
                                 break;
-                            case 2: //Explore
+                            case 2:
+                                Intent explore = new Intent(MyJourneyActivity.this, ExploreActivity.class);
+                                startActivity(explore);
                         }
                         break;
                     case 1: //Checkin

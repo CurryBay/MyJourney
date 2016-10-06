@@ -17,14 +17,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".MyJourneyActivity"
+        android:name=".MyJourneyActivity"
+        android:label="@string/title_activity_my_journey"
+        android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".ExploreActivity"
             android:label="@string/title_activity_my_journey"
             android:theme="@style/AppTheme" />
-        <activity android:name=".Alarm"></activity>
+
+        <activity android:name=".Alarm"/>
+
         <receiver
             android:name=".AlarmReceiver" >
         </receiver>
+
     </application>
 
 </manifest>
