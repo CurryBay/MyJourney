@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -14,17 +14,37 @@
         android:orientation="vertical"
         >
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/new_york_skyline"
+            android:scaleType="centerCrop"
+            android:id="@+id/destination"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEW YORK"
+            android:textColor="@android:color/white"
+            android:textSize="40dp"
+            android:layout_alignBottom="@id/destination"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif-condensed" />
+
         <ExpandableListView
             android:id="@+id/lvExp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:groupIndicator="@null"
-
+            android:layout_below="@id/destination"
             />
         <!--android:divider="@null"
         android:dividerHeight="0dp" -->
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- Side navigation drawer UI -->
     <ListView

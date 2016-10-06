@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class MyJourneyActivity extends AppCompatActivity {
-
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader = new ArrayList<String>();
@@ -58,7 +57,7 @@ public class MyJourneyActivity extends AppCompatActivity {
     private int min;
     private String remainingTime;
     private String flight_number2;
-    private String terminal;
+    private String gate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,11 @@ public class MyJourneyActivity extends AppCompatActivity {
         String[] timeInfo = tempSplit[1].split(":");
         scheduled= timeInfo[0] + ":" + timeInfo[1];
         sendGetRequestFlightDetails();
+        gate = intent.getExtras().getString("gate");
+        if (gate == null) {
+            gate = "Not Available";
+        }
+
 
         Log.i("======= Hours"," :: "+hours);
 
@@ -259,18 +263,18 @@ public class MyJourneyActivity extends AppCompatActivity {
         checkIn.add(new ListItem("Flight Status: " + flightInfo.getStatusText()));
 
         List<ListItem> departure = new ArrayList<>();
-        departure.add(new ListItem("Time left to departure: " + remainingTime));
-        departure.add(new ListItem("Terminal " + flightInfo.getTerminal()));
-        departure.add(new ListItem("Gate: " + flightInfo.getGate()));
+        departure.add(new ListItem("Time left to departure: " + remainingTime, true));
+        departure.add(new ListItem("Terminal: " + flightInfo.getTerminal()));
+        departure.add(new ListItem("Gate: " + gate));
         departure.add(new ListItem("Flight Details"));
         departure.add(new ListItem("Map to lounge", true));
         departure.add(new ListItem("Map to gate", true));
 
         List<ListItem> transit = new ArrayList<>();
-        transit.add(new ListItem("Time left to departure: "));
-        transit.add(new ListItem("Terminal"));
+        transit.add(new ListItem("Time left to departure: ", true));
+        transit.add(new ListItem("Terminal: "));
         transit.add(new ListItem("Gate: "));
-        transit.add(new ListItem("Flight Details: " + scheduled));
+        transit.add(new ListItem("Flight Details: "));
         transit.add(new ListItem("Map to lounge", true));
         transit.add(new ListItem("Map to gate", true));
 

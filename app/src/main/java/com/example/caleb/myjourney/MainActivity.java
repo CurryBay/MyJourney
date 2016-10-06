@@ -1,5 +1,6 @@
 package com.example.caleb.myjourney;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -132,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
         // private ProgressDialog progress;
 
         protected void onPreExecute(){
-            /* progress= new ProgressDialog(this.context);
-            progress.setMessage("Loading");
-            progress.show(); */
+           // ProgressDialog progress= new ProgressDialog(this.context);
+            //progress.setMessage("Loading");
+            //progress.show();
             super.onPreExecute();
         }
 
@@ -204,8 +205,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class GetFlightDetails extends AsyncTask<String, Void, Void> {
+    private class GetFlightDetails extends AsyncTask<String, Void, Integer> {
 
+        private ProgressDialog progress;
         private final Context context;
 
         public GetFlightDetails(Context c){
@@ -213,20 +215,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPreExecute(){
-            /* progress= new ProgressDialog(this.context);
+            progress= new ProgressDialog(this.context);
             progress.setMessage("Loading");
-            progress.show(); */
+            progress.show();
             super.onPreExecute();
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected Integer doInBackground(String... params) {
             try {
 
                 // final TextView outputView = (TextView) findViewById(R.id.showOutput);
                 final String baseURL = "https://flifo-qa.api.aero/flifo/v3/flight";
                 Uri builtUri = Uri.parse(baseURL).buildUpon()
-                        .appendPath("sin")
+                        .appendPath("fra")
                         .appendPath("sq")
                         .appendPath(flight_number2)
                         .appendPath("d")
@@ -282,8 +284,17 @@ public class MainActivity extends AppCompatActivity {
             return null;
     }
 
-        protected void onPostExecute(){
-
+        protected void onPostExecute(Integer a){
+            Intent journey = new Intent(context, MyJourneyActivity.class);
+            journey.putExtra("waitTime", waitTime);
+            journey.putExtra("flight_number2", flight_number2);
+            journey.putExtra("statusText", flightInfo.getStatusText());
+            journey.putExtra("scheduled", flightInfo.getScheduled());
+            journey.putExtra("terminal", flightInfo.getTerminal());
+            journey.putExtra("city", flightInfo.getCity());
+            journey.putExtra("gate", flightInfo.getGate());
+            progress.dismiss();
+            startActivity(journey);
             super.onPostExecute(null);
         }
 
@@ -309,15 +320,11 @@ public class MainActivity extends AppCompatActivity {
                             // passing on the variables  needed in My Journey
                               journey.putExtra("waitTime", waitTime);
                               journey.putExtra("flight_number2", flight_number2);
-        //                        journey.putExtra("statusText", flightInfo.getStatusText());
+                              journey.putExtra("statusText", flightInfo.getStatusText());
                               journey.putExtra("scheduled", flightInfo.getScheduled());
                               journey.putExtra("terminal", flightInfo.getTerminal());
                               journey.putExtra("city", flightInfo.getCity());
-        //                        journey.putExtra("gate", flightInfo.getGate());
-
-                            /* journey.putExtra("statusText", flightInfo.getStatusText());
-                            journey.putExtra("statusText", flightInfo.getStatusText());
-                            journey.putExtra("statusText", flightInfo.getStatusText()); */
+                              journey.putExtra("gate", flightInfo.getGate());
 
                             startActivity(journey);
                         }
