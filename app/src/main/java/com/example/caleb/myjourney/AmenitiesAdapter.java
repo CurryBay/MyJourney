@@ -28,16 +28,19 @@ public class AmenitiesAdapter extends ArrayAdapter {
 
         View list_item_view = convertView;
         if (list_item_view == null)
-            list_item_view = LayoutInflater.from(getContext()).inflate(R.layout.airport_list, parent, false);
+            list_item_view = LayoutInflater.from(getContext()).inflate(R.layout.airport_list_item, parent, false);
 
         AirportAmenities currentAmenity = (AirportAmenities)getItem(position);
 
-        TextView text = (TextView)list_item_view.findViewById(R.id.text);
+        TextView text = (TextView)list_item_view.findViewById(R.id.shopName);
         text.setText(currentAmenity.getAmenitiesName());
+
+        TextView text2 = (TextView)list_item_view.findViewById(R.id.unitNo);
+        text2.setText(currentAmenity.getShopId());
 
         ImageView image = (ImageView)list_item_view.findViewById(R.id.image);
         image.setImageResource(currentAmenity.getImageId());
 
-        return super.getView(position, convertView, parent);
+        return list_item_view;
     }
 }

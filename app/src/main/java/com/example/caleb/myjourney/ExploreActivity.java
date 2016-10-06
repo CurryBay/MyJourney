@@ -1,39 +1,167 @@
 package com.example.caleb.myjourney;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by tinghaong on 6/10/16.
  */
 
 public class ExploreActivity extends AppCompatActivity {
+    ExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+    List<String> listDataHeader = new ArrayList<String>();
+    HashMap<String, List<ListItem>> listDataChild = new HashMap<String, List<ListItem>>();
+    int currentpos = -1, waittime = -1;
+    private Flight flightInfo = null;
+    Context c;
+    private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private String mActivityTitle;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private String flight_number2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Set the content of the activity to use the activity_main.xml layout file
         setContentView(R.layout.activity_explore);
+        Intent intent = getIntent();
+        waittime = intent.getExtras().getInt("waitTime");
+        flight_number2 = intent.getExtras().getString("flight_number2");
 
-        // Find the view pager that will allow the user to swipe between fragments
+        mDrawerList = (ListView) findViewById(R.id.navList3);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout3);
+        mActivityTitle = getTitle().toString();
+
+        addDrawerItems();
+        setupDrawer();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-        // Create an adapter that knows which fragment should be shown on each page
         ExploreFragmentAdapter adapter = new ExploreFragmentAdapter(this, getSupportFragmentManager());
 
-        // Set the adapter onto the view pager
         viewPager.setAdapter(adapter);
 
-        // Find the tab layout that shows the tabs
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        // Connect the tab layout with the view pager. This will
-        //   1. Update the tab layout when the view pager is swiped
-        //   2. Update the view pager when a tab is selected
-        //   3. Set the tab layout's tab names with the view pager's adapter's titles
-        //      by calling onPageTitle()
         tabLayout.setupWithViewPager(viewPager);
+
+
+    }
+
+    // NAVIGATION DRAWER DETAILS
+
+    private void addDrawerItems() {
+        String[] osArray = {"Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        mDrawerList.setAdapter(mAdapter);
+
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(ExploreActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+
+                switch (position) {
+                    case 1:
+                        Intent journey = new Intent(ExploreActivity.this, MyJourneyActivity.class);
+
+                        // passing on the variables  needed in My Journey
+                        journey.putExtra("waitTime", -1);
+                        journey.putExtra("statusText", flightInfo.getStatusText());
+                        journey.putExtra("scheduled", flightInfo.getScheduled());
+                        journey.putExtra("terminal", flightInfo.getTerminal());
+                        journey.putExtra("city", flightInfo.getCity());
+                        journey.putExtra("gate", flightInfo.getGate());
+                        startActivity(journey);
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Menu");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_my_journey, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        // Activate the navigation drawer toggle
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 }

@@ -217,6 +217,8 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 break;
                             case 2:
                                 Intent explore = new Intent(MyJourneyActivity.this, ExploreActivity.class);
+                                explore.putExtra("waitTime", waittime);
+                                explore.putExtra("flight_number2", flight_number2);
                                 startActivity(explore);
                         }
                         break;

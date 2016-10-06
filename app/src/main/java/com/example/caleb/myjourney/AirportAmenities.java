@@ -7,8 +7,10 @@ package com.example.caleb.myjourney;
 public class AirportAmenities {
     private String amenitiesName;
     private int imageId;
+    private String shopId;
 
-    public AirportAmenities(String amenity, int imageInfo) {
+    public AirportAmenities(String amenity, String shopInfo, int imageInfo) {
+        shopId = shopInfo;
         amenitiesName = amenity;
         imageId = imageInfo;
     }
@@ -20,4 +22,6 @@ public class AirportAmenities {
     public int getImageId() {
         return imageId;
     }
+
+    public String getShopId() { return shopId; }
 }

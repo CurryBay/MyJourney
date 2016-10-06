@@ -57,11 +57,6 @@ public class AirportMap extends AppCompatActivity {
         Intent intent = getIntent();
         waittime = intent.getExtras().getInt("waitTime");
         flight_number2 = intent.getExtras().getString("flight_number2");
-        //String tempSchedule = intent.getExtras().getString("scheduled");
-        //String[] tempSplit = tempSchedule.split("T");
-       // String[] timeInfo = tempSplit[1].split(":");
-        //scheduled = timeInfo[0] + ":" + timeInfo[1];
-       // gate = intent.getExtras().getString("gate");
 
         mDrawerList = (ListView) findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

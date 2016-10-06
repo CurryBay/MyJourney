@@ -18,6 +18,11 @@
            android:text="Changi Airport Terminal 3"
            android:textSize="24dp"
            android:id="@+id/airportName"
+           android:gravity="center"
+           android:background="#77ccbbaa"
+           android:paddingTop="16dp"
+           android:textStyle="bold"
+           android:paddingBottom="16dp"
         />
 
         <com.example.caleb.myjourney.TouchImageView
