@@ -79,8 +79,9 @@ public class MyJourneyActivity extends AppCompatActivity {
         flight_number2 = intent.getExtras().getString("flight_number2");
         String tempSchedule = intent.getExtras().getString("scheduled");
         String[] tempSplit = tempSchedule.split("T");
-        String[] timeInfo = tempSplit[1].split(":");
+        final String[] timeInfo = tempSplit[1].split(":");
         scheduled= timeInfo[0] + ":" + timeInfo[1];
+        
         sendGetRequestFlightDetails();
         gate = intent.getExtras().getString("gate");
         if (gate == null) {
@@ -88,7 +89,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         }
 
 
-        Log.i("======= Hours"," :: "+hours);
+        Log.i("======= Hours"," :: "+ hours);
 
             // get the listview
         expListView = (ExpandableListView) findViewById(R.id.lvExp);
@@ -216,6 +217,9 @@ public class MyJourneyActivity extends AppCompatActivity {
                         switch(childPosition){
                             case 0:
                                 Intent alarm = new Intent(MyJourneyActivity.this, Alarm.class);
+                                alarm.putExtra("scheduled", scheduled);
+                                alarm.putExtra("hour", timeInfo[0]);
+                                alarm.putExtra("minute", timeInfo[1]);
                                 startActivity(alarm);
                                 break;
                             case 3:

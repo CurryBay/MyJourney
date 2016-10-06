@@ -326,6 +326,13 @@ public class MainActivity extends AppCompatActivity {
                               journey.putExtra("city", flightInfo.getCity());
                               journey.putExtra("gate", flightInfo.getGate());
 
+                            Intent alarmReceiver = new Intent(MainActivity.this, AlarmReceiver.class);
+                            alarmReceiver.putExtra("gate", flightInfo.getGate());
+
+                            /* journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText());
+                            journey.putExtra("statusText", flightInfo.getStatusText()); */
+
                             startActivity(journey);
                         }
                         else {

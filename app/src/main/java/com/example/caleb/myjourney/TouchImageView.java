@@ -1,5 +1,9 @@
 package com.example.caleb.myjourney;
 
+/**
+ * Created by beverly on 10/6/2016.
+ */
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,6 +15,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -24,8 +30,7 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-
-public class ZoomPic extends ImageView {
+public class TouchImageView extends ImageView {
 
     private static final String DEBUG = "DEBUG";
 
@@ -85,17 +90,17 @@ public class ZoomPic extends ImageView {
     private OnTouchListener userTouchListener = null;
     private OnTouchImageViewListener touchImageViewListener = null;
 
-    public ZoomPic(Context context) {
+    public TouchImageView(Context context) {
         super(context);
         sharedConstructing(context);
     }
 
-    public ZoomPic(Context context, AttributeSet attrs) {
+    public TouchImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         sharedConstructing(context);
     }
 
-    public ZoomPic(Context context, AttributeSet attrs, int defStyle) {
+    public TouchImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         sharedConstructing(context);
     }
@@ -388,9 +393,9 @@ public class ZoomPic extends ImageView {
     /**
      * Set zoom parameters equal to another TouchImageView. Including scale, position,
      * and ScaleType.
-     * @param img
+     * @param TouchImageView
      */
-    public void setZoom(ZoomPic img) {
+    public void setZoom(TouchImageView img) {
         PointF center = img.getScrollPosition();
         setZoom(img.getCurrentZoom(), center.x, center.y, img.getScaleType());
     }
@@ -1171,7 +1176,7 @@ public class ZoomPic extends ImageView {
         boolean isPreGingerbread;
 
         public CompatScroller(Context context) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+            if (VERSION.SDK_INT < VERSION_CODES.GINGERBREAD) {
                 isPreGingerbread = true;
                 scroller = new Scroller(context);
 
@@ -1233,7 +1238,7 @@ public class ZoomPic extends ImageView {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void compatPostOnAnimation(Runnable runnable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
             postOnAnimation(runnable);
 
         } else {
