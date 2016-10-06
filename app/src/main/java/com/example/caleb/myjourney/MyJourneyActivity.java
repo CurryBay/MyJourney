@@ -6,13 +6,9 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +47,7 @@ public class MyJourneyActivity extends AppCompatActivity {
     private String mActivityTitle;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
+    private String scheduled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +64,12 @@ public class MyJourneyActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        Bundle bundle = getIntent().getExtras();
-        waittime =bundle.getInt("waitTime");
-
+        Intent intent = getIntent();
+        waittime =intent.getExtras().getInt("waitTime");
+        String tempSchedule = intent.getExtras().getString("scheduled");
+        String[] tempSplit = tempSchedule.split("T");
+        String[] timeInfo = tempSplit[1].split(":");
+        scheduled= timeInfo[0] + ":" + timeInfo[1];
         sendGetRequestFlightDetails();
 
         // get the listview
@@ -208,6 +208,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         departure.add(new ListItem("Time left to departure: "));
         departure.add(new ListItem("Terminal"));
         departure.add(new ListItem("Gate: "));
+<<<<<<< Updated upstream
         departure.add(new ListItem("Flight Details"));
         departure.add(new ListItem("Map to lounge", true));
         departure.add(new ListItem("Map to gate", true));
@@ -219,6 +220,10 @@ public class MyJourneyActivity extends AppCompatActivity {
         transit.add(new ListItem("Flight Details"));
         transit.add(new ListItem("Map to lounge", true));
         transit.add(new ListItem("Map to gate", true));
+=======
+        departure.add(new ListItem("Flight Details " + scheduled));
+        departure.add(new ListItem("Map", true));
+>>>>>>> Stashed changes
 
         List<ListItem> arrival = new ArrayList<>();
         arrival.add(new ListItem("Flight Status"));

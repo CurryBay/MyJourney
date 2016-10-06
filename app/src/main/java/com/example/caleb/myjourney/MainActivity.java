@@ -1,6 +1,5 @@
 package com.example.caleb.myjourney;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -8,15 +7,19 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,8 +34,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static com.example.caleb.myjourney.R.id.node;
-
 public class MainActivity extends AppCompatActivity {
 
     private ListView mDrawerList;
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private Flight flightInfo = null;
     private String statusText, scheduled, terminal, city, gate;
 
+    private String flight_number2;
+    private String airlines;
+
     // not sure if these information are needed:
     // private String status, estimated, cityCode;
 
@@ -51,6 +55,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Button submitButton = (Button)findViewById(R.id.submit_button);
+        final EditText flight_number = (EditText)findViewById(R.id.flight_number);
+
+        flight_number.setText("SQ");
+        Selection.setSelection(flight_number.getText(), flight_number.getText().length());
+
+        flight_number.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(!s.toString().contains("SQ")){
+                    flight_number.setText("SQ");
+                    Selection.setSelection(flight_number.getText(), flight_number.getText().length());
+
+                }
+
+            }
+        });
+
+        submitButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("EditText", flight_number.getText().toString());
+                String tempFlightNo = flight_number.getText().toString();
+                flight_number2 = tempFlightNo.replaceAll("[^0-9]", ""); // returns 123
+                Log.v("EditText", flight_number2);
+                sendGetRequestFlightDetails();
+            }
+        });
+
 
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -64,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
 
         // running the different API calls to fetch data once the Main Activity starts
         sendGetRequestWaitTime();
-        sendGetRequestFlightDetails();
     }
 
     // API CALL FOR WAIT TIME
@@ -181,16 +228,16 @@ public class MainActivity extends AppCompatActivity {
                 Uri builtUri = Uri.parse(baseURL).buildUpon()
                         .appendPath("sin")
                         .appendPath("sq")
-                        .appendPath("26")
+                        .appendPath(flight_number2)
                         .appendPath("d")
                         .build();
                 Log.v("MainActivity", builtUri.toString());
                 URL url = new URL(builtUri.toString());
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.setRequestProperty("X-apiKey", "2cfd0827f82ceaccae7882938b4b1627");
 
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("X-apiKey", "2cfd0827f82ceaccae7882938b4b1627");
 
                 BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 final StringBuilder responseStrBuilder = new StringBuilder();
@@ -223,15 +270,17 @@ public class MainActivity extends AppCompatActivity {
 
 
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
+                Log.v("MainActivity", "Please enter a valid flight");
+               // Looper.prepare();
+               // Toast.makeText(MainActivity.this, "Please enter a valid flight", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
 
             return null;
-        }
+    }
 
         protected void onPostExecute(){
 
@@ -255,12 +304,12 @@ public class MainActivity extends AppCompatActivity {
                 switch(position){
                     case 1:
                         Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
-
+                        Log.v("MainActivity", flightInfo.getScheduled());
                         // passing on the variables  needed in My Journey
                           journey.putExtra("waitTime", waitTime);
 //                        journey.putExtra("statusText", flightInfo.getStatusText());
-//                        journey.putExtra("scheduled", flightInfo.getScheduled());
-//                        journey.putExtra("terminal", flightInfo.getTerminal());
+                          journey.putExtra("scheduled", flightInfo.getScheduled());
+                          journey.putExtra("terminal", flightInfo.getTerminal());
 //                        journey.putExtra("city", flightInfo.getCity());
 //                        journey.putExtra("gate", flightInfo.getGate());
 
