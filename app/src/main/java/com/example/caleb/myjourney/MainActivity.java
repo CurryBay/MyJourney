@@ -35,6 +35,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static android.os.Build.VERSION_CODES.M;
+
 public class MainActivity extends AppCompatActivity {
 
     public Flight flightInfo = null;
@@ -108,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = "My Journey";
 
+        setTitle(mActivityTitle);
+
         addDrawerItems();
         setupDrawer();
 
@@ -131,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     // API CALL FOR FLIGHT DETAILS
 
     private void addDrawerItems() {
-        String[] osArray = {"Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings"};
+        String[] osArray = {"Home", "My Journey", "Explore", "Boarding Pass", "Login", "Settings"};
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -141,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
                 switch (position) {
+                    case 0:
+                        break;
                     case 1:
                         if (flight_number2 != null) {
                             Intent journey = new Intent(MainActivity.this, MyJourneyActivity.class);
@@ -164,6 +170,28 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
                         }
+                        break;
+                    case 2:
+                        try {
+                            Intent explore = new Intent(MainActivity.this, ExploreActivity.class);
+                            explore.putExtra("waitTime", waitTime);
+                            explore.putExtra("flight_number2", flight_number2);
+                            explore.putExtra("statusText", flightInfo.getStatusText());
+                            explore.putExtra("scheduled", flightInfo.getScheduled());
+                            explore.putExtra("terminal", flightInfo.getTerminal());
+                            explore.putExtra("city", flightInfo.getCity());
+                            startActivity(explore);
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case 3:
+                        if (flight_number2 != null) {
+                            Intent boardingpass = new Intent(MainActivity.this, BoardingPassActivity.class);
+                            startActivity(boardingpass);
+                        } else
+                            Toast.makeText(MainActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        break;
                     default:
                         break;
                 }

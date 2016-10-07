@@ -17,30 +17,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-        android:name=".MyJourneyActivity"
-        android:label="@string/title_activity_my_journey"
-        android:theme="@style/AppTheme" />
-
+            android:name=".MyJourneyActivity"
+            android:label="@string/title_activity_my_journey"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ExploreActivity"
             android:label="Explore!"
             android:theme="@style/AppTheme" />
-
         <activity
             android:name=".AirportMap"
             android:label="Airport Maps"
             android:theme="@style/AppTheme" />
+        <activity android:name=".Alarm" />
 
+        <receiver android:name=".AlarmReceiver" />
 
-
-        <activity android:name=".Alarm"/>
-
-        <receiver
-            android:name=".AlarmReceiver" >
-        </receiver>
-
+        <activity
+            android:name=".BoardingPassActivity"
+            android:label="@string/title_activity_boarding_pass"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

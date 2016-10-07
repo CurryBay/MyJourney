@@ -33,7 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notifBuilder.build());
 
-        Toast.makeText(context, "poop", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "poop", Toast.LENGTH_LONG).show();
     }
 
 }

@@ -14,12 +14,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by tinghaong on 6/10/16.
  */
 
 public class AirportMap extends AppCompatActivity {
+    int waittime = 8;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
@@ -28,7 +30,7 @@ public class AirportMap extends AppCompatActivity {
     private String scheduled;
     private String flight_number2;
     private String gate;
-    int waittime = -1;
+    private Flight flightInfo;
 
 
     @Override
@@ -36,6 +38,7 @@ public class AirportMap extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent i = getIntent();
         int mapChoice = i.getExtras().getInt("mapID");
+        flightInfo = (Flight) i.getSerializableExtra("flightInfo");
         setContentView(R.layout.airport_map);
         ImageView airportMap = (ImageView)findViewById(R.id.airportMap);
         TextView airportText = (TextView)findViewById(R.id.airportName);
@@ -75,7 +78,7 @@ public class AirportMap extends AppCompatActivity {
     // NAVIGATION DRAWER DETAILS
 
     private void addDrawerItems() {
-        String[] osArray = {"Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings"};
+        String[] osArray = {"Home", "My Journey", "Explore", "Boarding Pass", "Login", "Settings"};
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -85,15 +88,39 @@ public class AirportMap extends AppCompatActivity {
                 //Toast.makeText(ExploreActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
                 switch (position) {
+                    case 0:
+                        Intent main = new Intent(AirportMap.this, MainActivity.class);
+                        startActivity(main);
+                        break;
                     case 1:
                         Intent journey = new Intent(AirportMap.this, MyJourneyActivity.class);
-
                         // passing on the variables  needed in My Journey
                         journey.putExtra("waitTime", waittime);
                         journey.putExtra("flight_number2", flight_number2);
                         journey.putExtra("scheduled", scheduled);
                         journey.putExtra("gate", gate);
+                        journey.putExtra("flightInfo", flightInfo);
                         startActivity(journey);
+                        break;
+                    case 2:
+                        try {
+                            Intent explore = new Intent(AirportMap.this, ExploreActivity.class);
+                            explore.putExtra("waitTime", waittime);
+                            explore.putExtra("flight_number2", flight_number2);
+                            explore.putExtra("statusText", flightInfo.getStatusText());
+                            explore.putExtra("scheduled", flightInfo.getScheduled());
+                            explore.putExtra("terminal", flightInfo.getTerminal());
+                            explore.putExtra("city", flightInfo.getCity());
+                            explore.putExtra("flightInfo", flightInfo);
+                            startActivity(explore);
+                        } catch (Exception e) {
+                            Toast.makeText(AirportMap.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case 3:
+                        Intent boardingPass = new Intent(AirportMap.this, BoardingPassActivity.class);
+                        boardingPass.putExtra("flightInfo", flightInfo);
+                        startActivity(boardingPass);
                     default:
                         break;
                 }

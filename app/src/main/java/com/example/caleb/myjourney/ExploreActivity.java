@@ -75,7 +75,7 @@ public class ExploreActivity extends AppCompatActivity {
     // NAVIGATION DRAWER DETAILS
 
     private void addDrawerItems() {
-        String[] osArray = {"Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings"};
+        String[] osArray = {"Home", "My Journey", "Explore", "Boarding Pass", "Login", "Settings"};
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
@@ -85,18 +85,24 @@ public class ExploreActivity extends AppCompatActivity {
                 //Toast.makeText(ExploreActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
                 switch (position) {
+                    case 0:
+                        Intent main = new Intent(ExploreActivity.this, MainActivity.class);
+                        startActivity(main);
+                        break;
                     case 1:
                         Intent journey = new Intent(ExploreActivity.this, MyJourneyActivity.class);
-
                         // passing on the variables  needed in My Journey
-                        journey.putExtra("waitTime", -1);
-                        journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("scheduled", flightInfo.getScheduled());
-                        journey.putExtra("terminal", flightInfo.getTerminal());
-                        journey.putExtra("city", flightInfo.getCity());
+                        journey.putExtra("waitTime", 8);
+//                        journey.putExtra("statusText", flightInfo.getStatusText());
+//                        journey.putExtra("scheduled", flightInfo.getScheduled());
+//                        journey.putExtra("terminal", flightInfo.getTerminal());
+//                        journey.putExtra("city", flightInfo.getCity());
                         journey.putExtra("flightInfo", flightInfo);
                         //journey.putExtra("gate", flightInfo.getGate());
                         startActivity(journey);
+                        break;
+                    case 3:
+                        break;
                     default:
                         break;
                 }

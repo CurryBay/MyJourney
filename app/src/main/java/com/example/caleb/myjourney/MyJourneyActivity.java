@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
+import static com.example.caleb.myjourney.R.id.departure;
+
 public class MyJourneyActivity extends AppCompatActivity {
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
@@ -50,6 +52,7 @@ public class MyJourneyActivity extends AppCompatActivity {
     HashMap<String, List<ListItem>> listDataChild = new HashMap<String, List<ListItem>>();
     int currentpos = -1, waittime = -1;
     Context c;
+    Intent boardingPass;
     private Flight flightInfo = null;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
@@ -82,7 +85,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         flightInfo = (Flight) intent.getSerializableExtra("flightInfo");
         waittime =intent.getExtras().getInt("waitTime");
         flight_number2 = intent.getExtras().getString("flight_number2");
-        String tempSchedule = intent.getExtras().getString("scheduled");
+        String tempSchedule = flightInfo.getScheduled();
         String[] tempSplit = tempSchedule.split("T");
         String[] dateSplit = tempSplit[0].split("-");
         final String[] timeInfo = tempSplit[1].split(":");
@@ -94,7 +97,8 @@ public class MyJourneyActivity extends AppCompatActivity {
         TextView cityname = (TextView) findViewById(R.id.cityname);
         cityname.setText(flightInfo.getCity());
 
-
+        boardingPass = new Intent(MyJourneyActivity.this, BoardingPassActivity.class);
+        boardingPass.putExtra("flightInfo", flightInfo);
 
         sendGetRequestFlightDetails();
         gate = intent.getExtras().getString("gate");
@@ -117,10 +121,6 @@ public class MyJourneyActivity extends AppCompatActivity {
         // setting list adapter
         expListView.setAdapter(listAdapter);
 
-       /* CountDownTimer newtimer = new CountDownTimer(1000000000, 1000) {
-
-            @Override
-            public void onTick(long millisUntilFinished) {*/
                 Calendar currentTime = Calendar.getInstance(TimeZone.getDefault());
                 Date currentLocalTime = currentTime.getTime();
                 DateFormat date = new SimpleDateFormat("HH:mm a");
@@ -139,17 +139,8 @@ public class MyJourneyActivity extends AppCompatActivity {
                 min = (int) (difference - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
                 hours = (hours < 0 ? -hours : hours);
                 min = (min < 0 ? -min : min);
-                remainingTime = hours + " hour " + min + " min";
-                /*prepareListData();
-                listAdapter.notifyDataSetChanged();
-            }
+        remainingTime = hours + "h " + min + "m";
 
-            @Override
-            public void onFinish() {
-
-            }
-        };
-        newtimer.start();*/
 
 
 
@@ -159,9 +150,6 @@ public class MyJourneyActivity extends AppCompatActivity {
 
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                // Toast.makeText(getApplicationContext(),
-                // "Group Clicked " + listDataHeader.get(groupPosition),
-                // Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -171,9 +159,6 @@ public class MyJourneyActivity extends AppCompatActivity {
 
             @Override
             public void onGroupExpand(int groupPosition) {
-//                Toast.makeText(getApplicationContext(),
-//                        listDataHeader.get(groupPosition) + " Expanded",
-//                        Toast.LENGTH_SHORT).show();
 
                 if (groupPosition != currentpos && currentpos != -1){
                     expListView.collapseGroup(currentpos);
@@ -187,9 +172,6 @@ public class MyJourneyActivity extends AppCompatActivity {
 
             @Override
             public void onGroupCollapse(int groupPosition) {
-//                Toast.makeText(getApplicationContext(),
-//                        listDataHeader.get(groupPosition) + " Collapsed",
-//                        Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -200,18 +182,11 @@ public class MyJourneyActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 // TODO Auto-generated method stub
-//                Toast.makeText(
-//                        getApplicationContext(),
-//                        listDataHeader.get(groupPosition)
-//                                + " : "
-//                                + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).getName(), Toast.LENGTH_SHORT)
-//                        .show();
                 switch(groupPosition){
                     case 0: //Pre-Flight
                         switch(childPosition){
                             case 0: //Manage Booking Details
-                                Intent journey = new Intent(MyJourneyActivity.this, MainActivity.class);
-                                startActivity(journey);
+                                goToManageBooking();
                                 break;
                             case 1: goToVisa();
                                 break;
@@ -226,6 +201,11 @@ public class MyJourneyActivity extends AppCompatActivity {
                     case 1: //Checkin
                         switch(childPosition){
                             case 0: //Check in online
+                                goToOnlineCheckIn();
+                                break;
+                            case 3:
+                                startActivity(boardingPass);
+                                break;
                             default:
                                 break;
                         }
@@ -240,28 +220,40 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 startActivity(alarm);
                                 break;
                             case 3:
+                                startActivity(boardingPass);
+                                break;
+                            case 4:
                                 Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
                                 map.putExtra("mapID", 0);
+                                map.putExtra("flightInfo", flightInfo);
                                 startActivity(map);
                                 break;
                         }
+                        break;
                     case 3: //transit
                         switch(childPosition){
+                            case 3:
+                                startActivity(boardingPass);
+                                break;
                             case 4:
                                 Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
                                 map.putExtra("mapID", 1);
+                                map.putExtra("flightInfo", flightInfo);
                                 startActivity(map);
-                            case 5: //map to gate
+                                break;
                         }
+                        break;
                     case 4: //Arrival
                         switch(childPosition) {
                             case 1:
                                 Intent map = new Intent(MyJourneyActivity.this, AirportMap.class);
                                 map.putExtra("mapID", 2);
+                                map.putExtra("flightInfo", flightInfo);
                                 startActivity(map);
 
                             case 2: //explore
                         }
+                        break;
                 }
 
 
@@ -294,24 +286,25 @@ public class MyJourneyActivity extends AppCompatActivity {
         checkIn.add(new ListItem("Check In Online", true));
         checkIn.add(new ListItem("Estimated Waiting Time: " + waittime + " minutes"));
         checkIn.add(new ListItem("Flight Status: " + flightInfo.getStatusText()));
+        checkIn.add(new ListItem("Flight Details", true));
 
         List<ListItem> departure = new ArrayList<>();
         departure.add(new ListItem("Time left to departure: " + remainingTime, true));
         departure.add(new ListItem("Terminal: " + flightInfo.getTerminal()));
         departure.add(new ListItem("Gate: " + gate));
-        departure.add(new ListItem("Flight Details"));
+        departure.add(new ListItem("Flight Details", true));
         departure.add(new ListItem("Map", true));
 
         List<ListItem> transit = new ArrayList<>();
-        transit.add(new ListItem("Time left to departure: ", true));
-        transit.add(new ListItem("Terminal: "));
-        transit.add(new ListItem("Gate: "));
-        transit.add(new ListItem("Flight Details: "));
+        transit.add(new ListItem("Time left to departure: " + remainingTime, true));
+        transit.add(new ListItem("Terminal: " + flightInfo.getTerminal()));
+        transit.add(new ListItem("Gate: " + gate));
+        transit.add(new ListItem("Flight Details", true));
         transit.add(new ListItem("Map", true));
 
 
         List<ListItem> arrival = new ArrayList<>();
-        arrival.add(new ListItem("Flight Status"));
+        arrival.add(new ListItem("Flight Status: " + flightInfo.getStatusText()));
         arrival.add(new ListItem("Map", true));
         arrival.add(new ListItem("Explore", true));
 
@@ -327,27 +320,40 @@ public class MyJourneyActivity extends AppCompatActivity {
     }
 
     private void addDrawerItems() {
-        String[] osArray = { "Search Flights", "My Journey", "Check In", "Krisflyer", "Login", "Settings" };
+        String[] osArray = {"Home", "My Journey", "Explore", "Boarding Pass", "Login", "Settings"};
         mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         mDrawerList.setAdapter(mAdapter);
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(MyJourneyActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
-                switch(position){
+                switch (position) {
+                    case 0:
+                        Intent main = new Intent(MyJourneyActivity.this, MainActivity.class);
+                        startActivity(main);
+                        break;
                     case 1:
-                        Intent journey = new Intent(MyJourneyActivity.this, MyJourneyActivity.class);
-
-                        // passing on the variables  needed in My Journey
-                        journey.putExtra("waitTime", -1);
-                        journey.putExtra("statusText", flightInfo.getStatusText());
-                        journey.putExtra("scheduled", flightInfo.getScheduled());
-                        journey.putExtra("terminal", flightInfo.getTerminal());
-                        journey.putExtra("city", flightInfo.getCity());
-                        journey.putExtra("flightInfo", flightInfo);
-                        startActivity(journey);
+                        closeOptionsMenu();
+                        closeContextMenu();
+                        break;
+                    case 2:
+                        try {
+                            Intent explore = new Intent(MyJourneyActivity.this, ExploreActivity.class);
+                            explore.putExtra("waitTime", waittime);
+                            explore.putExtra("flight_number2", flight_number2);
+                            explore.putExtra("statusText", flightInfo.getStatusText());
+                            explore.putExtra("scheduled", flightInfo.getScheduled());
+                            explore.putExtra("terminal", flightInfo.getTerminal());
+                            explore.putExtra("city", flightInfo.getCity());
+                            startActivity(explore);
+                        } catch (Exception e) {
+                            Toast.makeText(MyJourneyActivity.this, "No Flight Number Entered!", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case 3:
+                        startActivity(boardingPass);
+                        break;
                     default:
                         break;
                 }
@@ -423,6 +429,14 @@ public class MyJourneyActivity extends AppCompatActivity {
         goToUrl ( "http://visacentral.sg/requirements");
     }
 
+    public void goToOnlineCheckIn() {
+        goToUrl("https://www.singaporeair.com/en_UK/plan-and-book/check-in-online/");
+    }
+
+    public void goToManageBooking() {
+        goToUrl("https://www.singaporeair.com/en_UK/plan-and-book/managebooking/");
+    }
+
     private void goToUrl(String url) {
         Uri uriUrl = Uri.parse(url);
         Intent launchWeb = new Intent(Intent.ACTION_VIEW, uriUrl);
@@ -438,9 +452,6 @@ public class MyJourneyActivity extends AppCompatActivity {
         }
 
         protected void onPreExecute() {
-            /* progress= new ProgressDialog(this.context);
-            progress.setMessage("Loading");
-            progress.show(); */
             super.onPreExecute();
         }
 
