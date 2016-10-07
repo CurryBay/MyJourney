@@ -31,8 +31,8 @@ public class ExploreActivity extends AppCompatActivity {
     List<String> listDataHeader = new ArrayList<String>();
     HashMap<String, List<ListItem>> listDataChild = new HashMap<String, List<ListItem>>();
     int currentpos = -1, waittime = -1;
-    private Flight flightInfo = null;
     Context c;
+    private Flight flightInfo = null;
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
@@ -45,6 +45,7 @@ public class ExploreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
         Intent intent = getIntent();
+        flightInfo = (Flight) intent.getSerializableExtra("flightInfo");
         waittime = intent.getExtras().getInt("waitTime");
         flight_number2 = intent.getExtras().getString("flight_number2");
 
@@ -93,7 +94,8 @@ public class ExploreActivity extends AppCompatActivity {
                         journey.putExtra("scheduled", flightInfo.getScheduled());
                         journey.putExtra("terminal", flightInfo.getTerminal());
                         journey.putExtra("city", flightInfo.getCity());
-                        journey.putExtra("gate", flightInfo.getGate());
+                        journey.putExtra("flightInfo", flightInfo);
+                        //journey.putExtra("gate", flightInfo.getGate());
                         startActivity(journey);
                     default:
                         break;

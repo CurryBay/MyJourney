@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
+        mActivityTitle = "My Journey";
 
         addDrawerItems();
         setupDrawer();

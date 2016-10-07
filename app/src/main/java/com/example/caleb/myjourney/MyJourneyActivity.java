@@ -89,7 +89,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         scheduled= timeInfo[0] + ":" + timeInfo[1];
 
 
-        Log.v("MyJourneyActivity", "flightInfo.getStatusText() is: " + flightInfo.getStatusText());
+        //Log.v("MyJourneyActivity", "flightInfo.getStatusText() is: " + flightInfo.getStatusText());
 
         TextView cityname = (TextView) findViewById(R.id.cityname);
         cityname.setText(flightInfo.getCity());
@@ -219,6 +219,7 @@ public class MyJourneyActivity extends AppCompatActivity {
                                 Intent explore = new Intent(MyJourneyActivity.this, ExploreActivity.class);
                                 explore.putExtra("waitTime", waittime);
                                 explore.putExtra("flight_number2", flight_number2);
+                                explore.putExtra("flightInfo", flightInfo);
                                 startActivity(explore);
                         }
                         break;
@@ -333,7 +334,7 @@ public class MyJourneyActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MyJourneyActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MyJourneyActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
 
                 switch(position){
                     case 1:
@@ -345,6 +346,7 @@ public class MyJourneyActivity extends AppCompatActivity {
                         journey.putExtra("scheduled", flightInfo.getScheduled());
                         journey.putExtra("terminal", flightInfo.getTerminal());
                         journey.putExtra("city", flightInfo.getCity());
+                        journey.putExtra("flightInfo", flightInfo);
                         startActivity(journey);
                     default:
                         break;
